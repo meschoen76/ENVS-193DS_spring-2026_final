@@ -1,8 +1,91 @@
 ---
 title: "ENVS 193DS Final"
 author: "Matthew Schoen"
+date: June 9, 2026
 format: pdf
+toc: true
 ---
 
 Link to ENVS 193DS Final GitHub Repo: [HERE](https://github.com/meschoen76/ENVS-193DS_spring-2026_final)
+
+# Set Up
+
+```{r}
+#| label: set-up
+#| message: false
+
+library(janitor)
+library(tidyverse)
+library(here)
+library(readxl)
+library(flextable)
+library(DHARMa)
+library(MuMIn)
+library(ggeffects)
+
+# Reading in the data & storing it as an object
+nest <- read.csv(here("data", "nest_data_final.csv"))
+```
+
+# Problem 1: Research Writing 
+
+## a. Transparents Statistical Methods 
+
+## b. Suggestions for rewriting 
+
+## c. Further Analysis 
+
+# Problem 2: Data Analysis
+
+**Goal:** Answer the following questions 
+
+1) How do tree height and acacia ant species influence the probability of bird nest occurrence (of any species of birds)?
+
+2) Does acacia ant species identity influence the effect of tree height on probability of nest occurrence differ depending on acacia ant species?
+
+## a. Clean & Wrangle 
+
+## b. Response Variable 
+
+## c. Purpose of the Study 
+
+## d. Table of Models 
+
+## e. Run the Models 
+
+## f. Select the Best Model 
+
+## g. Check the Diagnostics 
+
+## h. Visualize the Model Predictions 
+
+## i. Write A Figure Caption 
+
+## j. Calculate Model Predictions 
+
+## k. Interpret Your Results 
+
+# Problem 3: Affective and Exploratory Visualizations 
+
+## a. Comparing Visualizations 
+## b. Designing An Analysis 
+
+## c. Check Any Assumptions and Run Your Analysis 
+
+## d. Create a Visualization 
+
+## e. Write a Caption 
+
+## f. Write About Your Results 
+
+## g. Sharing Your Affective Visualization 
+
+Completed during week 10 in workshop! 
+
+
+
+
+
+
+
 
