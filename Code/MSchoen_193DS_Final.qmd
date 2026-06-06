@@ -31,9 +31,28 @@ nest <- read.csv(here("data", "nest_data_final.csv"))
 
 ## a. Transparents Statistical Methods 
 
+**Part 1:**
+
+In part 1, they more than likely used a logistic regression as the response variable is the probably of American Avocet microhabitat use while the predictor variable is the distance to the water's edge. 
+
+**Part 2:**
+
+In part 2, the they more than likely used a chi-square test of independence as both bird species and habitat type are categorical variables and the analysis looks to examine how the distribution of bird species differs among habitat type. 
+
 ## b. Suggestions for rewriting 
 
-## c. Further Analysis 
+**Part 1:** 
+
+American Avocet tuse of micro-habtitats varies wiht distance from the water edge. This suggests that proximity to water influences where and how the American Avocet chooses to use habitats.
+
+
+**Part 2:**
+
+American Avocets, Forster's Terns, and Black-necked Stilts used habitat types differently. This suggests that each species has habitat preference differs within the San Francisco Bay estuary. 
+
+## c. Further Analysis
+
+To further the analysis, examining how the type of vegetation cover within a given area influences American Avoocet habitat use. This *continuous variable* could be measured as a percentage (%) of ground cover within the study area using quadrats set at a given dimension (ex: 1m x 1m, 3ft x 3ft) and could showcase how other factors affected by vegetation cover (food, nesting area, protection from predators) influences behavior.
 
 # Problem 2: Data Analysis
 
@@ -44,6 +63,35 @@ nest <- read.csv(here("data", "nest_data_final.csv"))
 2) Does acacia ant species identity influence the effect of tree height on probability of nest occurrence differ depending on acacia ant species?
 
 ## a. Clean & Wrangle 
+
+```{r}
+#| label: cleaning-and-wrangling
+
+# Creating new clean object from nest
+nests_clean <- nest |>  
+  # selecting only the necessary columns 
+  select("case_control", # selecting case_control
+         "height_cm", # selecting bird_speces
+         "ant_species") |>  # selecting ant_species
+  # filtering ant_species for the specified species
+  filter(ant_species %in% c("RRB", "AB", "BBR")) |> 
+  # reordering ant species as specied 
+  mutate(ant_species = 
+         fct_relevel(ant_species,
+           "AB",
+           "RRB",
+           "BBR")) |> 
+  # Creating new column with spelled out names 
+ mutate(ant_species,
+        ant_species_name = case_when( # specifying specific names in the new column 
+    ant_species == "AB" ~ "Crematogaster sjostedti",
+    ant_species == "RRB" ~ "Crematogaster mimosae",
+    ant_species == "BBR" ~ "Crematogaster nigriceps"
+  ))
+```
+
+
+
 
 ## b. Response Variable 
 
