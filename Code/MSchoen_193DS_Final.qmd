@@ -88,16 +88,33 @@ nests_clean <- nest |>
     ant_species == "RRB" ~ "Crematogaster mimosae",
     ant_species == "BBR" ~ "Crematogaster nigriceps"
   ))
+
+# Displaying structure of nests_clean
+str(nests_clean)
+
+# Displaying 10 random rows within the data set 
+slice_sample(nests_clean, n = 10)
 ```
-
-
-
 
 ## b. Response Variable 
 
+In this data set, "case_control" is made up of a binary system where 1 indicates a bird nest is present in a tree while 0 indicates no bird nests were found within a tree. This is important when assessing how/why birds choose specific trees for nesting. 
+
 ## c. Purpose of the Study 
 
+**Tree Height:**
+
+Tree height is a continuous variable measured in centimeters. As tree height increases, the probability of nest occurrence increases as a taller tree provides greater protection from predators, visibility, and increases structural support to the nest itself (Found in the "Introduction" section).
+
+**Ant Species:**
+
+Ant species is a discrete categorical variable as it contains three distinct "categories" which in this case are the different species of ants: *Crematogaster sjostedti*, *Crematoogaster mimosae*, and *Crematoogaster nigriceps*. The species of ant can influence nesting probability as different species of ants vary in their overall "aggressiveness" toward other organsisms which in turn alters tree structure and can affect the overall suitability of a tree for nesting. (Found in Introduction & Methods).
+
 ## d. Table of Models 
+
+
+
+
 
 ## e. Run the Models 
 
