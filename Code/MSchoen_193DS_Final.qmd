@@ -114,40 +114,62 @@ Ant species is a discrete categorical variable as it contains three distinct "ca
 
 | Model number | Tree Height | Ant Species | Interaction | Predictor list |  
 |---------|:---:|:---:|:-------:|:----------------: |
-| 1            |  X  |       X         |    X    | all predictors (full model) | 
-| 2            |  X  |       X         |         | Tree Height and Ant Species     |
+| 1            |  X  |       X         |    X    | All predictors (Tree height and ant species) with an interaction | 
+| 2            |  X  |       X         |         | Tree Height and Ant Species (No Interaction)   |
 
 ## e. Run the Models
 
 ```{r}
 #| label: model fitting
+#| include: false
 
-# model 0: null model
+# model 1: all predictors with interaction
 
-model0 <- lm(total_g ~ 1, # formula = no predictors
-             data = drought_exp_clean) # using clean data frame
+model1 <- glm(
+  case_control ~ height_cm * ant_species,
+  data = nests_clean, # using clean data set 
+  family = binomial) # specifying a binomial model
 
-# model 1: all predictors
+# model 2: Predictors without interaction
 
-model1 <- lm(
-  total_g ~ sla + water_treatment + species_name, # formula all predictors
-  data = drought_exp_clean) # using clean data frame 
-
-# model 2: SLA and water treatment
-
-model2 <- lm(
-  total_g ~ sla + water_treatment, # formula only SLA and treatment
-  data = drought_exp_clean # using clean data frame 
+model2 <- glm(
+  case_control ~ height_cm + ant_species, # formula only tree height and ant species
+  data = nests_clean, # using clean data set 
+  family = binomial # specifying a binomial data set 
 )
 ```
 
-
-
 ## f. Select the Best Model 
+
+```{r}
+#| label: running-AIC
+
+# Running an AIC
+AIC(
+  model1, 
+  model2)
+```
+
+The best model as determined by Akaike's Informationi Criterion (AIC) included both predictors, tree height (cm) and ant species, and the interaction between both of them (AIC = 237.8). The results suggest that  a relationship exists between tree height and the probability of nest occurrence based off the species of acacia ant. 
 
 ## g. Check the Diagnostics 
 
+```{r}
+#| label: checking-diagnostics
+
+# Simulating Residuals 
+mod1_simres <- simulateResiduals(model1) # creating new object for simulated residuals 
+
+plot(mod1_simres) # plotting the residuals 
+testDispersion(mod1_simres) # Assessing the dispersion within the model
+testUniformity(mod1_simres) # Assessing the normality of the model 
+testOutliers(mod1_simres) # Assessing outliers within the model 1
+```
+
 ## h. Visualize the Model Predictions 
+
+
+
 
 ## i. Write A Figure Caption 
 
