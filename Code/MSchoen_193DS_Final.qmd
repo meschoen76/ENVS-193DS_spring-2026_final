@@ -374,7 +374,9 @@ cor.test(my_data_clean$total_steps_taken_for_the_day,
          method = "spearman")
 ```
 
-### Calculating Effect Size 
+### Findings
+
+The Pearson correlation test identified a *weak negative relationship* between total daily steps and duration of sleep (Pearson’s product-moment correlation, Pearson’s r = -0.375, t(42) = -2.62, p = 0.012, $\alpha$ = 0.05, CI[-0.605, -0.088]). Because the p-value was less than $\alpha$ = 0.05, the null hypothesis of no linear relationship was rejected. However, the Spearman-rank correlation test *did not* identify a statistically significant monotonic relationship between the two variables (Spearman rank correlation test: $\rho$ = -0.254, S = 17801, p = 0.096). Since the Spearman p-value was greater than $\alpha$ = 0.05, the null hypothesis was not rejected for the rank-based test. Overall, these results suggest that there may be a weak negative relationship between total daily steps and sleep duration, but the relationship is sensitive to test choice and may be influenced by outliers.
 
 
 
