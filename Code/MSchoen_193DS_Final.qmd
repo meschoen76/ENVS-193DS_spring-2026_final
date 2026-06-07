@@ -23,8 +23,12 @@ library(DHARMa)
 library(MuMIn)
 library(ggeffects)
 
-# Reading in the data & storing it as an object
+# Reading in the nest data & storing it as an object
 nest <- read.csv(here("data", "nest_data_final.csv"))
+
+# Reading in pesronal data & storing it as an object
+step_count <- read_csv(
+  here("data", "MyData_HW3_Format.csv"))
 ```
 
 # Problem 1: Research Writing 
@@ -168,6 +172,59 @@ testOutliers(mod1_simres) # Assessing outliers within the model 1
 
 ## h. Visualize the Model Predictions 
 
+```{r}
+#| label: model-predictions
+
+preds <- ggpredict(
+  model1,
+  terms = c("height_cm", 
+            "ant_species"))
+```
+
+```{r}
+#| label: visualizing-model-predictions
+
+# ggplot as base layer 
+ggplot() +
+  # jitter plot as first layer to represent individual observations
+  geom_jitter(
+    data = nests_clean, # using nests_clean data set 
+    mapping = aes(
+      x = height_cm, # height is the x-axis
+      y = case_control, # case control is the y-axis 
+      color = ant_species_name), # ant species determines color of data
+    height = 0, # no height movement 
+    width = 0.1, # minimal horizontal movement 
+    shape = 21, # specifying shape
+    alpha = 0.7) + # specifying opacity 
+  # ribbon as the the second layer 
+  geom_ribbon(
+    data = preds, # using prediction data
+    mapping = aes(
+      x = x, # setting x axis
+      ymin = conf.low, # setting lower confidence interval
+      ymax = conf.high, # setting upper confidence interval 
+      fill = group), # fill based off the group 
+    alpha = 0.3) + # setting opacity for ribbon
+ # third layer is a line 
+  geom_line(
+    data = preds, # using prediction data 
+    mapping = aes(
+      x = x, # setting x-axis 
+      y = predicted, # setting y-axis
+      color = group)) + # color based off of group 
+  # creating separate plots for each ant species 
+  facet_wrap(~ group) +
+  # creating custom labels for axes and title 
+  labs(
+    x = "Tree height (cm)",
+    y = "Predicted probability of nest occurrence",
+    title = "Predicted probability of nest occurrence by tree height") +
+  # removing excess visuals with updated theme 
+  theme_classic() +
+  # removing the legend 
+  theme(legend.position = "none")
+```
 
 
 
@@ -181,9 +238,145 @@ testOutliers(mod1_simres) # Assessing outliers within the model 1
 
 ## a. Comparing Visualizations 
 
+**How are the visualizations different from each other in the way you have represented your data?**
+
+The exploratory visualizations span between a bar chart comparing mean activity level per day of the week and a jitter plot examining if there is a direct relationship between time slept and activity level while the affective visualization is a bar chart that combines my predictor and response variables as well as my other predictory variables. The exploratory visualizations look to examine direct relationships between one predictor variable and the response while the the affective visualization serves as a holistic view of how general physical exertion and recovery habits influence overall daily activity level. It should also be noted that the affective visualization relies heavily on *color* while the exploratory visualizations use basic numerical-based figures.
+
+**What similarities do you see between all your visualizations?**
+
+The main takeaway from all of the visualizations is that there isn't just *one* deciding factor that directly influences my daily activity level. This is illustrated in contrasting the exploratory visualizations (comparing one predictor to the response variable) with the affective visualization: the exploratory pieces showcase *some* form of a relationship but not a necessarily strong one while the affective piece shows that the additional variables I measured also have a drastic impact on overall activity level. In other words, all the visualizations showcase that *multiple factors contribute to my overall daily activity level*.
+
+**What patterns (e.g. differences in means/counts/proportions/medians, trends through time, relationships between variables) do you see in each visualization? Are these different between visualizations? If so, why? If not, why not?**
+
+In first exploratory visualization (comparing daily activity per day of the week), during the week, mean daily step count is generally higher with Tuesday and Thursday exhibiting the highest overall steps taken while the weekend days (Saturday & Sunday) have the exhibit the lowest steps taken. In the second visualization (comparing time slept and activity level), there seems to be a somewhat negative correlation between time slept and activity level where activity level decreases as time slept increases. In comparing all three visualizations, the findings from the exploratory visualizations match that of the affective visualization where my main recovery days (weekends) have lower overall activity level.  
+
+**What kinds of feedback did you get during week 9 in workshop or from the instructors? How did you implement or try those suggestions? If you tried and kept those suggestions, explain how and why; if not, explain why not.**
+
+During week 9, I didn't get much feedback from my peers other than the fact that they liked where I was going with my affective visualization. They also thought that the variables I used to collect information my "study" were well thought out and supported finding an answer to my central question. The main feedback I got from instructors were regarding my exploratory visualizations and this was mainly just to clean up the plots which I did! 
+
 ## b. Designing An Analysis 
 
+**Question:** Is there a statistical relationship between time slept and activity level (measured in daily steps taken)? 
+
+**Analysis:** To understand whether there is a statistical relationship between total time slept (minutes) and activity level (measured in daily steps taken), I will run a correlation test. This is appropriate as based off my initial exploratory visualization, it seems that there is *some* form of a negative linear relationship between the total time slept and activity level the next day. However, because the relationship isn't strictly obvious, I want to assess how correlated these variables are. Understanding this will aid in how I prioritize sleep in my every day life. 
+
+**Variables Assessed** 
+
+*Predictor Variable:* Total Time Slept On A Nightly Basis (Minutes)
+
+Type: Numerical, Continuous 
+
+*Response Variable:* Total Steps Taken Daily 
+
+Type: Numerial, Discrete
+
 ## c. Check Any Assumptions and Run Your Analysis 
+
+### Checking Assumptions 
+
+```{r}
+#| label: cleaning-data 
+
+# cleaning my data before creating ggplot 
+my_data_clean <- step_count |> 
+  # cleaning names 
+  clean_names() |> 
+  # removing any NA values 
+  filter(!is.na(day_of_the_week))
+
+```
+
+```{r}
+#| label: checking-assumptions
+
+#creating ggplot base layer
+ggplot(data = my_data_clean, 
+       mapping = aes(x = duration_of_sleep_minutes,
+                    y = total_steps_taken_for_the_day)) + 
+  # Adding a QQ plot 
+  geom_point(color = "steelblue4",
+             size = 2,
+             alpha = 0.7,
+             shape = 21) + 
+  # Adding custom labels for the x and y axis
+  labs(x = "Duration of Sleep (Minutes)",
+       y = "Total Daily Steps Taken",
+       title = "Observing A Potential Relationship Between Total Daily Steps Taken 
+For The Day & the Duration of Sleep Achieved",
+      subtitle = "Most Recent Observation: May 27, 2026") + 
+  # Updating the theme to remove grid lines 
+  theme_classic() + 
+  # Customizing the theme elements 
+  theme(plot.title = element_text(face = "bold", # bolding the title
+                                  color = "gray10"), #making the title gray
+        plot.subtitle = element_text(color = "gray35"), # choosing color
+        axis.title = element_text(face = "bold"), # bolding the axes
+        axis.text = element_text(color = "gray20")) # axes color
+  
+```
+
+*Note:* There seems to be some type of negative relationship between the two but need to ensure the normality of the data before running the correlation test.
+
+```{r}
+#| label: checking-normality-steps-taken
+
+# ggplot as base layer 
+  ggplot(data = my_data_clean, 
+         mapping = aes(sample = total_steps_taken_for_the_day)) + # specifying use of total steps taken for the day
+  # first layer is QQ plot
+  geom_qq() + 
+  # second layer is QQ line 
+  geom_qq_line(color = "orange") + # making line red 
+  # updating theme 
+  theme_minimal() + 
+  # updating title 
+  labs(title = "QQ Plot for Total Steps Taken Daily")
+  
+```
+
+```{r}
+#| label: checking-normality-time-slept
+
+# ggplot as the base layer 
+   ggplot(data = my_data_clean, 
+    mapping = aes(sample = duration_of_sleep_minutes)) + # specifying use of sleep duration 
+  # first layer is the qq plot 
+  geom_qq() + 
+  # second layer is the qq plot line 
+  geom_qq_line(color = "orange") + # making line red 
+  # updating theme 
+  theme_minimal() + 
+  # updating title 
+  labs(title = "QQ Plot for Duration of Sleep (Minutes)")
+```
+
+*Note:* The data for both Total Daily Steps Taken and Duration of Sleep (minutes) appear *relatively normal*. However, the scatter plot directly comparing the variables showcases there could be other factors influencing the relationship. As a result, I believe running both a Pearson's & Spearman-rank correlation test and then comparing the results of both would be beneficial while enhancing the rigor of my analysis. 
+
+### Running Proposed Analysis 
+
+```{r}
+#| label: pearson-correlation
+#| echo: true
+
+# Conducting a Pearson Correlation test 
+cor.test(my_data_clean$total_steps_taken_for_the_day,
+         my_data_clean$duration_of_sleep_minutes,
+         method = "pearson")
+```
+
+```{r}
+#| label: spearman-rank-correlation
+#| echo: true
+
+# Conducting a Spearman-rank correlation test
+cor.test(my_data_clean$total_steps_taken_for_the_day,
+         my_data_clean$duration_of_sleep_minutes,
+         method = "spearman")
+```
+
+### Calculating Effect Size 
+
+
 
 ## d. Create a Visualization 
 
