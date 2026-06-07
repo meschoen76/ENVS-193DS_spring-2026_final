@@ -112,11 +112,36 @@ Ant species is a discrete categorical variable as it contains three distinct "ca
 
 ## d. Table of Models 
 
+| Model number | Tree Height | Ant Species | Interaction | Predictor list |  
+|---------|:---:|:---:|:-------:|:----------------: |
+| 1            |  X  |       X         |    X    | all predictors (full model) | 
+| 2            |  X  |       X         |         | Tree Height and Ant Species     |
+
+## e. Run the Models
+
+```{r}
+#| label: model fitting
+
+# model 0: null model
+
+model0 <- lm(total_g ~ 1, # formula = no predictors
+             data = drought_exp_clean) # using clean data frame
+
+# model 1: all predictors
+
+model1 <- lm(
+  total_g ~ sla + water_treatment + species_name, # formula all predictors
+  data = drought_exp_clean) # using clean data frame 
+
+# model 2: SLA and water treatment
+
+model2 <- lm(
+  total_g ~ sla + water_treatment, # formula only SLA and treatment
+  data = drought_exp_clean # using clean data frame 
+)
+```
 
 
-
-
-## e. Run the Models 
 
 ## f. Select the Best Model 
 
@@ -133,6 +158,7 @@ Ant species is a discrete categorical variable as it contains three distinct "ca
 # Problem 3: Affective and Exploratory Visualizations 
 
 ## a. Comparing Visualizations 
+
 ## b. Designing An Analysis 
 
 ## c. Check Any Assumptions and Run Your Analysis 
