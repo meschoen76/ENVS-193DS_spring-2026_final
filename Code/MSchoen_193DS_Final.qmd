@@ -178,6 +178,8 @@ preds <- ggpredict(
   model1,
   terms = c("height_cm", 
             "ant_species_name"))
+
+summary(preds)
 ```
 
 ```{r}
@@ -234,12 +236,13 @@ Data source: Lujan, E., et al. (2023). Data, code, and metadata for: Symbiotic a
 
 # What is the probability of a nest occurrence at 600cm
 ggpredict(model1, # using ggpredict on model 1
-          terms = "height_cm [600]") # setting the desired height to be 600cm
+          terms = c("height_cm [600]", "ant_species_name")) # setting the desired height to be 600cm
 ```
 
-
-
 ## k. Interpret Your Results 
+
+
+
 
 # Problem 3: Affective and Exploratory Visualizations 
 
