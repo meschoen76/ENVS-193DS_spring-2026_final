@@ -80,19 +80,18 @@ nests_clean <- nest |>
          "ant_species") |>  # selecting ant_species
   # filtering ant_species for the specified species
   filter(ant_species %in% c("RRB", "AB", "BBR")) |> 
-  # reordering ant species as specied 
-  mutate(ant_species = 
-         fct_relevel(ant_species,
-           "AB",
-           "RRB",
-           "BBR")) |> 
   # Creating new column with spelled out names 
  mutate(ant_species,
         ant_species_name = case_when( # specifying specific names in the new column 
     ant_species == "AB" ~ "Crematogaster sjostedti",
     ant_species == "RRB" ~ "Crematogaster mimosae",
-    ant_species == "BBR" ~ "Crematogaster nigriceps"
-  ))
+    ant_species == "BBR" ~ "Crematogaster nigriceps")) |> 
+# reordering ant species as specified 
+  mutate(ant_species_name = 
+         fct_relevel(ant_species_name,
+           "Crematogaster sjostedti",
+           "Crematogaster mimosae",
+           "Crematogaster nigriceps"))
 
 # Displaying structure of nests_clean
 str(nests_clean)
@@ -121,7 +120,7 @@ Ant species is a discrete categorical variable as it contains three distinct "ca
 |---------|:---:|:---:|:-------:|:----------------: |
 | 1            |  X  |       X         |    X    | All predictors (Tree height and ant species) with an interaction | 
 | 2            |  X  |       X         |         | Tree Height and Ant Species (No Interaction)   |
-**Figure 1:** Overview of the two models being run 
+**Tablw 1:** Overview of the two models being run. Model 1 will have both variables, Tree Height & Ant Species interact where Model 2 won't.
 
 ## e. Run the Models
 
@@ -164,12 +163,12 @@ The best model as determined by Akaike's Informationi Criterion (AIC) included b
 ```{r}
 #| label: DHARMa-diagnostics
 #| fig-height: 6
-#| fig-width: 6
+#| fig-width: 10
 
 # Plotting Residuals for model 1
 plot(simulateResiduals(model1))
 ```
-**Figure 2:** DHARMa Residuals diagnostics for the selected logistic regression model predicting bird nest occurrence from tree height, acacia ant species, and their interaction. The left panel shows a QQ plot comparing simulated and expected residual distributions. The right displays DHARMa residuals plotted against model predictions.
+**Figure 1:** DHARMa Residuals diagnostics for the selected logistic regression model predicting bird nest occurrence from tree height, acacia ant species, and their interaction. The left panel shows a QQ plot comparing simulated and expected residual distributions. The right displays DHARMa residuals plotted against model predictions.
 
 ## h. Visualize the Model Predictions 
 
@@ -181,6 +180,14 @@ preds <- ggpredict(
   terms = c("height_cm", # specifying height_cm
             "ant_species_name")) #specifying ant species name
 ```
+
+```{r}
+#| label: updating-preds
+
+# Creating new object 
+preds <- rename(preds, "ant_species_name" = "group")
+```
+
 
 ```{r}
 #| label: visualizaing-mod-preds
@@ -197,8 +204,7 @@ ggplot(data = nests_clean, # specifying nests_clean as data set
   geom_ribbon(data = preds, # using prediction data
               aes( x = x, 
                    ymin = conf.low, # lower confidence interval for ribbon
-                   ymax = conf.high, # upper confidence interval for ribbon
-                   group = group),
+                   ymax = conf.high), # upper confidence interval for ribbon
                   fill = "lightblue", # specifying color of ribbon
                    alpha = 0.4, # opacity of ribbon
               inherit.aes = FALSE) + # don't use ggplot aes
@@ -208,7 +214,7 @@ ggplot(data = nests_clean, # specifying nests_clean as data set
                 y = predicted),
             color = "dodgerblue", # specifying line color
             inherit.aes = FALSE) + # don't use ggplot aes
-  facet_wrap( ~ group) + # creating separate plots for each ant species
+  facet_wrap( ~ ant_species_name) + # creating separate plots for each ant species
   scale_y_continuous(limits = c(0, 1), # scaling axes
                      breaks = c(0, 1)) + 
   labs( # creating custom labels and title
@@ -223,7 +229,7 @@ ggplot(data = nests_clean, # specifying nests_clean as data set
 
 ## i. Write A Figure Caption 
 
-**Figure 3: Predicted Probability of Nest Occurrence by Tree Height and Acacia Ant Species**
+**Figure 2: Predicted Probability of Nest Occurrence by Tree Height and Acacia Ant Species**
 
 Individual observations of nest occurrence are represented by points, where 0 indicates no nest was present and 1 indicates a nest was present. The red lines show predicted probabilities of nest occurrence from the selected logistic regression model, while the blue shaded regions represent 95% confidence intervals around the predictions. Panels display predictions separately for Crematogaster mimosae, Crematogaster sjostedti, and Crematogaster nigriceps. 
 
@@ -431,7 +437,7 @@ The Pearson correlation test identified a *weak negative relationship* between t
 
 ## g. Sharing Your Affective Visualization 
 
-Completed during week 10 in workshop! 
+![](../image/Affect_Vis.jpeg){width = "75%"}
 
 
 
