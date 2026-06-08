@@ -339,7 +339,8 @@ For The Day & the Duration of Sleep Achieved",
 
 # ggplot as the base layer 
    ggplot(data = my_data_clean, 
-    mapping = aes(sample = duration_of_sleep_minutes)) + # specifying use of sleep duration 
+    mapping = aes(sample = duration_of_sleep_minutes)) + 
+  # specifying use of sleep duration 
   # first layer is the qq plot 
   geom_qq() + 
   # second layer is the qq plot line 
@@ -374,17 +375,47 @@ cor.test(my_data_clean$total_steps_taken_for_the_day,
          method = "spearman")
 ```
 
-### Findings
-
-The Pearson correlation test identified a *weak negative relationship* between total daily steps and duration of sleep (Pearson’s product-moment correlation, Pearson’s r = -0.375, t(42) = -2.62, p = 0.012, $\alpha$ = 0.05, CI[-0.605, -0.088]). Because the p-value was less than $\alpha$ = 0.05, the null hypothesis of no linear relationship was rejected. However, the Spearman-rank correlation test *did not* identify a statistically significant monotonic relationship between the two variables (Spearman rank correlation test: $\rho$ = -0.254, S = 17801, p = 0.096). Since the Spearman p-value was greater than $\alpha$ = 0.05, the null hypothesis was not rejected for the rank-based test. Overall, these results suggest that there may be a weak negative relationship between total daily steps and sleep duration, but the relationship is sensitive to test choice and may be influenced by outliers.
-
-
-
 ## d. Create a Visualization 
+
+```{r}
+#| label: creating-a-visualization 
+
+#creating ggplot base layer
+ggplot(data = my_data_clean, 
+       mapping = aes(x = duration_of_sleep_minutes,
+                    y = total_steps_taken_for_the_day)) + 
+  # Adding a QQ plot 
+  geom_point(color = "steelblue4",
+             size = 2,
+             alpha = 0.7,
+             shape = 21) + 
+  # Adding custom labels for the x and y axis
+  labs(x = "Duration of Sleep (Minutes)",
+       y = "Total Daily Steps Taken",
+       title = "Examining the Relationship Between Total Daily 
+Steps Taken and the Duration of Sleep Achieved 
+the Night Prior (Minutes)",
+      subtitle = "Most Recent Observation: May 27, 2026") + 
+  # Updating the theme to remove grid lines 
+  theme_classic() + 
+  # Customizing the theme elements 
+  theme(plot.title = element_text(face = "bold", # bolding the title
+                                  color = "gray10"), #making the title gray
+        plot.subtitle = element_text(color = "gray35"), # choosing color
+        axis.title = element_text(face = "bold"), # bolding the axes
+        axis.text = element_text(color = "gray20")) # axes color
+  
+```
 
 ## e. Write a Caption 
 
+**Figure Caption:**  
+
+The figure depicts the relationship between sleep duration (minutes) shown on the x-axis and total daily step count across all observations collected during the study period shown on the y-axis. The points represent the individual observations recorded during the study period. 
+
 ## f. Write About Your Results 
+
+The Pearson correlation test identified a *weak negative relationship* between total daily steps and duration of sleep (Pearson’s product-moment correlation, Pearson’s r = -0.375, t(42) = -2.62, p = 0.012, $\alpha$ = 0.05, CI[-0.605, -0.088]). Because the p-value was less than $\alpha$ = 0.05, the null hypothesis of no linear relationship was rejected. However, the Spearman-rank correlation test *did not* identify a statistically significant monotonic relationship between the two variables (Spearman rank correlation test: $\rho$ = -0.254, S = 17801, p = 0.096). Since the Spearman p-value was greater than $\alpha$ = 0.05, the null hypothesis was not rejected for the rank-based test. Given the conflicting results between the two tests, it can be said that while there *may* be somewhat of a relationship between total time slept and total daily steps taken, other variables (such as the additional variables measured) more than likely influence overal step count. 
 
 ## g. Sharing Your Affective Visualization 
 
