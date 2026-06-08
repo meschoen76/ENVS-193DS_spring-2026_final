@@ -437,7 +437,7 @@ The Pearson correlation test identified a *weak negative relationship* between t
 
 ## g. Sharing Your Affective Visualization 
 
-![](../image/Affect_Vis.jpeg){width = "75%"}
+![](../image/Affect_Vis.jpeg)
 
 
 
