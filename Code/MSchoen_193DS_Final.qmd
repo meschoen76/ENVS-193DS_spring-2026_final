@@ -120,6 +120,7 @@ Ant species is a discrete categorical variable as it contains three distinct "ca
 |---------|:---:|:---:|:-------:|:----------------: |
 | 1            |  X  |       X         |    X    | All predictors (Tree height and ant species) with an interaction | 
 | 2            |  X  |       X         |         | Tree Height and Ant Species (No Interaction)   |
+**Figure 1:** Overview of the two models being run 
 
 ## e. Run the Models
 
@@ -130,16 +131,16 @@ Ant species is a discrete categorical variable as it contains three distinct "ca
 # model 1: all predictors with interaction
 
 model1 <- glm(
-  case_control ~ height_cm * ant_species,
+  case_control ~ height_cm * ant_species_name,
   data = nests_clean, # using clean data set 
-  family = binomial) # specifying a binomial model
+  family = "binomial") # specifying a binomial model
 
 # model 2: Predictors without interaction
 
 model2 <- glm(
-  case_control ~ height_cm + ant_species, # formula only tree height and ant species
+  case_control ~ height_cm + ant_species_name, # formula only tree height and ant species
   data = nests_clean, # using clean data set 
-  family = binomial # specifying a binomial data set 
+  family = "binomial" # specifying a binomial data set 
 )
 ```
 
@@ -159,16 +160,14 @@ The best model as determined by Akaike's Informationi Criterion (AIC) included b
 ## g. Check the Diagnostics 
 
 ```{r}
-#| label: checking-diagnostics
+#| label: DHARMa-diagnostics
+#| fig-height: 6
+#| fig-width: 6
 
-# Simulating Residuals 
-mod1_simres <- simulateResiduals(model1) # creating new object for simulated residuals 
-
-plot(mod1_simres) # plotting the residuals 
-testDispersion(mod1_simres) # Assessing the dispersion within the model
-testUniformity(mod1_simres) # Assessing the normality of the model 
-testOutliers(mod1_simres) # Assessing outliers within the model 1
+# Plotting Residuals 
+plot(simulateResiduals(model1))
 ```
+**Figure 2:** DHARMa Residuals diagnostics for the selected logistic regression model predicting bird nest occurrence from tree height, acacia ant species, and their interaction. The left panel shows a QQ plot comparing simulated and expected residual distributions. The right displays DHARMa residuals plotted against model predictions.
 
 ## h. Visualize the Model Predictions 
 
@@ -178,59 +177,67 @@ testOutliers(mod1_simres) # Assessing outliers within the model 1
 preds <- ggpredict(
   model1,
   terms = c("height_cm", 
-            "ant_species"))
+            "ant_species_name"))
 ```
 
 ```{r}
-#| label: visualizing-model-predictions
+#| label: visualizaing-mod-preds
+#| echo: true
 
 # ggplot as base layer 
-ggplot() +
-  # jitter plot as first layer to represent individual observations
-  geom_jitter(
-    data = nests_clean, # using nests_clean data set 
-    mapping = aes(
-      x = height_cm, # height is the x-axis
-      y = case_control, # case control is the y-axis 
-      color = ant_species_name), # ant species determines color of data
-    height = 0, # no height movement 
-    width = 0.1, # minimal horizontal movement 
-    shape = 21, # specifying shape
-    alpha = 0.7) + # specifying opacity 
-  # ribbon as the the second layer 
-  geom_ribbon(
-    data = preds, # using prediction data
-    mapping = aes(
-      x = x, # setting x axis
-      ymin = conf.low, # setting lower confidence interval
-      ymax = conf.high, # setting upper confidence interval 
-      fill = group), # fill based off the group 
-    alpha = 0.3) + # setting opacity for ribbon
- # third layer is a line 
-  geom_line(
-    data = preds, # using prediction data 
-    mapping = aes(
-      x = x, # setting x-axis 
-      y = predicted, # setting y-axis
-      color = group)) + # color based off of group 
-  # creating separate plots for each ant species 
-  facet_wrap(~ group) +
-  # creating custom labels for axes and title 
+ggplot(data = nests_clean,
+       aes(x = height_cm,
+           y = case_control)) +
+  geom_point(size = 3,
+             alpha = 0.7,
+             shape = 21,
+             color = "royalblue") +
+  geom_ribbon(data = preds,
+              aes( x = x,
+                   ymin = conf.low,
+                   ymax = conf.high,
+                   group = group),
+                  fill = "dodgerblue3",
+                   alpha = 0.4,
+              inherit.aes = FALSE) +
+  geom_line(data = preds,
+            aes(x = x,
+                y = predicted,
+                color = "dodgerblue"),
+            inherit.aes = FALSE) + 
+  facet_wrap( ~ group) + 
+  scale_y_continuous(limits = c(0, 1),
+                     breaks = c(0, 1)) + 
   labs(
-    x = "Tree height (cm)",
-    y = "Predicted probability of nest occurrence",
-    title = "Predicted probability of nest occurrence by tree height") +
+    x = "Tree Height (cm)",
+    y = "Predicted Probability of Nest Occurrence",
+    title = "Predicted Probability of Nest Occurrence By Tree Height") +
   # removing excess visuals with updated theme 
   theme_classic() +
   # removing the legend 
   theme(legend.position = "none")
 ```
 
-
-
 ## i. Write A Figure Caption 
 
+**Figure 3: Predicted Probability of Nest Occurrence by Tree Height and Acacia Ant Species**
+
+Individual observations of nest occurrence are represented by points, where 0 indicates no nest was present and 1 indicates a nest was present. The red lines show predicted probabilities of nest occurrence from the selected logistic regression model, while the blue shaded regions represent 95% confidence intervals around the predictions. Panels display predictions separately for Crematogaster mimosae, Crematogaster sjostedti, and Crematogaster nigriceps. 
+
+Data source: Lujan, E., et al. (2023). Data, code, and metadata for: Symbiotic acacia ants drive nesting behavior by birds in an African savanna. Zenodo. https://doi.org/10.5281/zenodo.8373322.
+
 ## j. Calculate Model Predictions 
+
+```{r}
+#| label: model-predictions
+#| echo: true
+
+# What is the probability of a nest occurrence at 600cm
+ggpredict(model1, # using ggpredict on model 1
+          terms = "height_cm [600]") # setting the desired height to be 600cm
+```
+
+
 
 ## k. Interpret Your Results 
 
