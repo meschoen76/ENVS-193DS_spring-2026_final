@@ -14,6 +14,7 @@ Link to ENVS 193DS Final GitHub Repo: [HERE](https://github.com/meschoen76/ENVS-
 #| label: set-up
 #| message: false
 
+# Reading in packages necessary to complete the assignment
 library(janitor)
 library(tidyverse)
 library(here)
@@ -131,7 +132,8 @@ Ant species is a discrete categorical variable as it contains three distinct "ca
 # model 1: all predictors with interaction
 
 model1 <- glm(
-  case_control ~ height_cm * ant_species_name,
+  case_control ~ height_cm * ant_species_name, 
+  # specifying what variables to include and interact
   data = nests_clean, # using clean data set 
   family = "binomial") # specifying a binomial model
 
@@ -151,8 +153,8 @@ model2 <- glm(
 
 # Running an AIC
 AIC(
-  model1, 
-  model2)
+  model1, # specifying model 1
+  model2) # specifying model 2
 ```
 
 The best model as determined by Akaike's Informationi Criterion (AIC) included both predictors, tree height (cm) and ant species, and the interaction between both of them (AIC = 237.8). The results suggest that  a relationship exists between tree height and the probability of nest occurrence based off the species of acacia ant. 
@@ -164,7 +166,7 @@ The best model as determined by Akaike's Informationi Criterion (AIC) included b
 #| fig-height: 6
 #| fig-width: 6
 
-# Plotting Residuals 
+# Plotting Residuals for model 1
 plot(simulateResiduals(model1))
 ```
 **Figure 2:** DHARMa Residuals diagnostics for the selected logistic regression model predicting bird nest occurrence from tree height, acacia ant species, and their interaction. The left panel shows a QQ plot comparing simulated and expected residual distributions. The right displays DHARMa residuals plotted against model predictions.
@@ -174,12 +176,10 @@ plot(simulateResiduals(model1))
 ```{r}
 #| label: model-predictions
 
-preds <- ggpredict(
-  model1,
-  terms = c("height_cm", 
-            "ant_species_name"))
-
-summary(preds)
+preds <- ggpredict( 
+  model1, # creating a prediction for model 1
+  terms = c("height_cm", # specifying height_cm
+            "ant_species_name")) #specifying ant species name
 ```
 
 ```{r}
@@ -187,30 +187,31 @@ summary(preds)
 #| echo: true
 
 # ggplot as base layer 
-ggplot(data = nests_clean,
-       aes(x = height_cm,
-           y = case_control)) +
-  geom_point(size = 3,
-             alpha = 0.7,
-             shape = 21,
-             color = "royalblue") +
-  geom_ribbon(data = preds,
-              aes( x = x,
-                   ymin = conf.low,
-                   ymax = conf.high,
+ggplot(data = nests_clean, # specifying nests_clean as data set 
+       aes(x = height_cm, # height as x-axis
+           y = case_control)) + # nest prevalence as y-axis
+  geom_point(size = 3, # size of points
+             alpha = 0.7, # opacity of points
+             shape = 21, # shape of points
+             color = "bisque3") + # color of points
+  geom_ribbon(data = preds, # using prediction data
+              aes( x = x, 
+                   ymin = conf.low, # lower confidence interval for ribbon
+                   ymax = conf.high, # upper confidence interval for ribbon
                    group = group),
-                  fill = "dodgerblue3",
-                   alpha = 0.4,
-              inherit.aes = FALSE) +
-  geom_line(data = preds,
-            aes(x = x,
-                y = predicted,
-                color = "dodgerblue"),
-            inherit.aes = FALSE) + 
-  facet_wrap( ~ group) + 
-  scale_y_continuous(limits = c(0, 1),
+                  fill = "lightblue", # specifying color of ribbon
+                   alpha = 0.4, # opacity of ribbon
+              inherit.aes = FALSE) + # don't use ggplot aes
+  geom_line(data = preds, # data set is prediction
+            # setting axes
+            aes(x = x, 
+                y = predicted),
+            color = "dodgerblue", # specifying line color
+            inherit.aes = FALSE) + # don't use ggplot aes
+  facet_wrap( ~ group) + # creating separate plots for each ant species
+  scale_y_continuous(limits = c(0, 1), # scaling axes
                      breaks = c(0, 1)) + 
-  labs(
+  labs( # creating custom labels and title
     x = "Tree Height (cm)",
     y = "Predicted Probability of Nest Occurrence",
     title = "Predicted Probability of Nest Occurrence By Tree Height") +
@@ -231,7 +232,7 @@ Data source: Lujan, E., et al. (2023). Data, code, and metadata for: Symbiotic a
 ## j. Calculate Model Predictions 
 
 ```{r}
-#| label: model-predictions
+#| label: predicting-occurrence-600cm
 #| echo: true
 
 # What is the probability of a nest occurrence at 600cm
@@ -241,8 +242,7 @@ ggpredict(model1, # using ggpredict on model 1
 
 ## k. Interpret Your Results 
 
-
-
+The logistic regression model including tree height, acacia ant species, and their interaction was selected as the best model based on Akaike’s Information Criterion (AIC = 237.8). Predicted nest occurrence probabilities at the maximum observed tree height of 600 cm differed substantially among ant species. Trees occupied by Crematogaster mimosae had a predicted nest occurrence probability of 0.74 (95% CI [0.48, 0.90]), while trees occupied by Crematogaster sjostedti had a much lower predicted probability of 0.20 (95% CI [0.00, 0.99]). In contrast, trees occupied by Crematogaster nigriceps had a predicted nest occurrence probability of 1.00 (95% CI [1.00, 1.00]). As tree height increased, the probability of nest occurrence generally increased, but the strength of this relationship depended on ant species (Figure 3). These results suggest that both tree height and acacia ant species influence bird nesting behavior, likely because different ant species vary in their defensive behavior and their effects on tree structure, which can alter the suitability of trees as nesting sites.
 
 # Problem 3: Affective and Exploratory Visualizations 
 
@@ -301,13 +301,14 @@ my_data_clean <- step_count |>
 
 #creating ggplot base layer
 ggplot(data = my_data_clean, 
+       # setting axes to the desired variables
        mapping = aes(x = duration_of_sleep_minutes,
                     y = total_steps_taken_for_the_day)) + 
   # Adding a QQ plot 
-  geom_point(color = "steelblue4",
-             size = 2,
-             alpha = 0.7,
-             shape = 21) + 
+  geom_point(color = "steelblue4", # specifying color
+             size = 2, # specifying size
+             alpha = 0.7, # changing opacity
+             shape = 21) +  # changing the shape
   # Adding custom labels for the x and y axis
   labs(x = "Duration of Sleep (Minutes)",
        y = "Total Daily Steps Taken",
@@ -372,7 +373,7 @@ For The Day & the Duration of Sleep Achieved",
 # Conducting a Pearson Correlation test 
 cor.test(my_data_clean$total_steps_taken_for_the_day,
          my_data_clean$duration_of_sleep_minutes,
-         method = "pearson")
+         method = "pearson") # specifying which correlation test
 ```
 
 ```{r}
@@ -382,7 +383,7 @@ cor.test(my_data_clean$total_steps_taken_for_the_day,
 # Conducting a Spearman-rank correlation test
 cor.test(my_data_clean$total_steps_taken_for_the_day,
          my_data_clean$duration_of_sleep_minutes,
-         method = "spearman")
+         method = "spearman") # specifying which correlation test
 ```
 
 ## d. Create a Visualization 
@@ -392,13 +393,14 @@ cor.test(my_data_clean$total_steps_taken_for_the_day,
 
 #creating ggplot base layer
 ggplot(data = my_data_clean, 
+       # setting variables for the axes
        mapping = aes(x = duration_of_sleep_minutes,
                     y = total_steps_taken_for_the_day)) + 
   # Adding a QQ plot 
-  geom_point(color = "steelblue4",
-             size = 2,
-             alpha = 0.7,
-             shape = 21) + 
+  geom_point(color = "steelblue4", # choosing color
+             size = 2, # setting point size 
+             alpha = 0.7, # opacity 
+             shape = 21) + # specific shape
   # Adding custom labels for the x and y axis
   labs(x = "Duration of Sleep (Minutes)",
        y = "Total Daily Steps Taken",
