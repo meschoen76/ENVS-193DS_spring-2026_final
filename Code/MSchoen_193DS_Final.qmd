@@ -38,7 +38,7 @@ step_count <- read_csv(
 
 **Part 1:**
 
-In part 1, they more than likely used a logistic regression as the response variable is the probably of American Avocet microhabitat use while the predictor variable is the distance to the water's edge. 
+In part 1, they more than likely used a logistic regression as the response variable is the probability of American Avocet microhabitat use while the predictor variable is the distance to the water's edge. 
 
 **Part 2:**
 
@@ -48,16 +48,15 @@ In part 2, the they more than likely used a chi-square test of independence as b
 
 **Part 1:** 
 
-American Avocet tuse of micro-habtitats varies wiht distance from the water edge. This suggests that proximity to water influences where and how the American Avocet chooses to use habitats.
-
+American Avocet's use of micro-habtitats varies with distance from the water edge. This suggests that proximity to water influences where and how the American Avocet chooses to use habitats.
 
 **Part 2:**
 
-American Avocets, Forster's Terns, and Black-necked Stilts used habitat types differently. This suggests that each species has habitat preference differs within the San Francisco Bay estuary. 
+American Avocets, Forster's Terns, and Black-necked Stilts used habitat types differently. This suggests that each species habitat preference differs within the San Francisco Bay estuary. 
 
 ## c. Further Analysis
 
-To further the analysis, examining how the type of vegetation cover within a given area influences American Avoocet habitat use. This *continuous variable* could be measured as a percentage (%) of ground cover within the study area using quadrats set at a given dimension (ex: 1m x 1m, 3ft x 3ft) and could showcase how other factors affected by vegetation cover (food, nesting area, protection from predators) influences behavior.
+To further the analysis, examining how the type of vegetation cover within a given area influences American Avoocet habitat use. This *numerical continuous variable* could be measured as a percentage (%) of ground cover within the study area using quadrats set at a given dimension (ex: 1m x 1m, 3ft x 3ft) and could showcase how other factors affected by vegetation cover (food, nesting area, protection from predators) influences behavior.
 
 # Problem 2: Data Analysis
 
@@ -120,13 +119,13 @@ Ant species is a discrete categorical variable as it contains three distinct "ca
 |---------|:---:|:---:|:-------:|:----------------: |
 | 1            |  X  |       X         |    X    | All predictors (Tree height and ant species) with an interaction | 
 | 2            |  X  |       X         |         | Tree Height and Ant Species (No Interaction)   |
-**Tablw 1:** Overview of the two models being run. Model 1 will have both variables, Tree Height & Ant Species interact where Model 2 won't.
+**Table 1:** Overview of the two models being run. Model 1 will have both variables, Tree Height & Ant Species interact where Model 2 won't.
 
 ## e. Run the Models
 
 ```{r}
 #| label: model fitting
-#| include: false
+#| echo: false
 
 # model 1: all predictors with interaction
 
@@ -156,7 +155,7 @@ AIC(
   model2) # specifying model 2
 ```
 
-The best model as determined by Akaike's Informationi Criterion (AIC) included both predictors, tree height (cm) and ant species, and the interaction between both of them (AIC = 237.8). The results suggest that  a relationship exists between tree height and the probability of nest occurrence based off the species of acacia ant. 
+The best model as determined by Akaike's Information Criterion (AIC) included both predictors, tree height (cm) and ant species, and the interaction between both of them (AIC = 237.8). The results suggest that a relationship exists between tree height and the probability of nest occurrence based off the species of acacia ant. 
 
 ## g. Check the Diagnostics 
 
